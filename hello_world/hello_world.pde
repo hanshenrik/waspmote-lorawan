@@ -13,6 +13,6 @@ void loop()
   USB.println(F("Hello World, this is Waspmote!"));
  
   // A little delay
-  delay(2000);
+  delay(5000);
 }
 
