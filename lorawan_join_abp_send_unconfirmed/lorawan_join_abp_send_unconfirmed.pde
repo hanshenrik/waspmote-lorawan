@@ -50,8 +50,6 @@ char data[] = "0102030405060708090A0B0C0D0E0F";
 // variable
 uint8_t error;
 
-
-
 void setup() 
 {
   USB.ON();
@@ -192,6 +190,11 @@ void loop()
 {
 
   //////////////////////////////////////////////
+  // 0. Read some data
+  //////////////////////////////////////////////
+
+
+  //////////////////////////////////////////////
   // 1. Switch on
   //////////////////////////////////////////////
 
@@ -220,11 +223,12 @@ void loop()
   {
     USB.println(F("2. Join network OK"));   
 
+
     //////////////////////////////////////////////
     // 3. Send unconfirmed packet 
     //////////////////////////////////////////////
 
-    error = LoRaWAN.sendUnconfirmed( PORT, data);
+    error = LoRaWAN.sendUnconfirmed( PORT, data );
 
     // Error messages:
     /*
@@ -259,7 +263,6 @@ void loop()
   }
 
 
-
   //////////////////////////////////////////////
   // 4. Switch off
   //////////////////////////////////////////////
@@ -279,12 +282,8 @@ void loop()
 
 
   USB.println();
-  delay(10000);
-
-
+  delay(60000);
 
 }
-
-
 
 
