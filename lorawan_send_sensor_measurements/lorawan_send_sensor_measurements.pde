@@ -80,6 +80,7 @@ void loop()
   batteryLevel = PWR.getBatteryLevel();
   
   if (batteryLevel < 30) {
+    USB.println(F("Battery is below 30%"));
 //    TODO:
 //    sendLowBatteryFrame();
 //    Go to sleep for a long time (so someone has time to charge battery since no solar panel)
@@ -92,10 +93,6 @@ void loop()
   sendFrameWithLoRaWAN();
 
   USB.println();
-  // TODO: enter deep sleep (or hibernation) mode to save battery!
-  // Remember that it may take time to warm up sensors, so if we want to
-  // send say every minute, might just sleep for 40s and warm up for 20s...
-//  delay(60000);
   PWR.deepSleep("00:00:04:00", RTC_OFFSET, RTC_ALM1_MODE1, ALL_OFF);
 }
 
@@ -103,7 +100,7 @@ void loop()
 void doGasSensorBoardMeasurements()
 {
   // Blink green LED to indicate doing measurements
-  Utils.blinkGreenLED(500, 3);
+  Utils.blinkGreenLED(1000, 3);
   
   // Turn on Gas Sensor board, wait for stabilization and sensor response time
   SensorGasv20.ON();
@@ -180,7 +177,6 @@ void makeFrame()
   
   frame.addSensor(SENSOR_GP_TC, temperature);
   frame.addSensor(SENSOR_GP_HUM, humidity);
-  
   frame.addSensor(SENSOR_GP_CO, coPPMVal);
   frame.addSensor(SENSOR_GP_CO2, co2PPMVal);
 
@@ -192,7 +188,7 @@ void makeFrame()
 void sendFrameWithLoRaWAN()
 {
   // Blink red LED to indicate sending frame with LoRaWAN
-  Utils.blinkRedLED(500, 3);
+  Utils.blinkRedLED(1000, 3);
   
   // Convert frame to a base64 string(?)
   char sendableString[frame.length*2 + 1];
@@ -234,7 +230,10 @@ void sendFrameWithLoRaWAN()
     // Check status
     if( error == 0 ) 
     {
-      USB.println(F("3. LoRaWAN send unconfirmed packet OK"));
+      // Get Device EUI
+      LoRaWAN.getDeviceAddr();
+      USB.print(F("3. LoRaWAN send unconfirmed packet OK from device address: "));
+      USB.println(LoRaWAN._devAddr);
       Utils.blinkLEDs(1000);
       if (LoRaWAN._dataReceived == true)
       { 
