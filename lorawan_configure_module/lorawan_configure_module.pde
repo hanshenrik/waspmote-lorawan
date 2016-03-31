@@ -268,7 +268,6 @@ void setup()
   USB.println(F("------------------------------------"));
   USB.println(F("Now the LoRaWAN module is ready for"));
   USB.println(F("joining networks and send messages."));
-  USB.println(F("Please check the next examples..."));
   USB.println(F("------------------------------------\n"));
 
 }
