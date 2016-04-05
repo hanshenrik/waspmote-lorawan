@@ -69,6 +69,9 @@ void setup()
 {
   // Set frame ID for all frames to be sent
   frame.setID(nodeFrameID);
+  
+  // DEV Print stuff to the Serial Monitor
+  USB.ON();
 }
 
 void loop() 
@@ -77,14 +80,19 @@ void loop()
   batteryLevel = PWR.getBatteryLevel();
   
   if (batteryLevel < 30) {
-      internalTemperature = RTC.getTemperature();
-      
-      doGasSensorBoardMeasurements();
-      makeFrame();
-      sendFrameWithLoRaWAN();
-      
-      // Longer sleep interval since low battery
-      PWR.deepSleep("00:00:30:00", RTC_OFFSET, RTC_ALM1_MODE1, ALL_OFF);
+    USB.println(F("Battery is below 30%"));
+
+//    TODO:
+//    sendLowBatteryFrame();
+
+    internalTemperature = RTC.getTemperature();
+    
+    doGasSensorBoardMeasurements();
+    makeFrame();
+    sendFrameWithLoRaWAN();
+    
+    // Longer sleep interval since low battery
+    PWR.deepSleep("00:00:30:00", RTC_OFFSET, RTC_ALM1_MODE1, ALL_OFF);
   }
   
   internalTemperature = RTC.getTemperature();
@@ -93,6 +101,7 @@ void loop()
   makeFrame();
   sendFrameWithLoRaWAN();
 
+  USB.println();
   PWR.deepSleep("00:00:04:00", RTC_OFFSET, RTC_ALM1_MODE1, ALL_OFF);
 }
 
@@ -100,7 +109,7 @@ void loop()
 void doGasSensorBoardMeasurements()
 {
   // Blink green LED to indicate doing measurements
-  Utils.blinkGreenLED(200, 3);
+  Utils.blinkGreenLED(1000, 3);
   
   // Turn on Gas Sensor board, wait for stabilization and sensor response time
   SensorGasv20.ON();
@@ -179,13 +188,16 @@ void makeFrame()
   frame.addSensor(SENSOR_GP_HUM, humidity);
   frame.addSensor(SENSOR_GP_CO, coPPMVal);
   frame.addSensor(SENSOR_GP_CO2, co2PPMVal);
+
+  // DEV Print frame
+  frame.showFrame();
 }
 
 
 void sendFrameWithLoRaWAN()
 {
   // Blink red LED to indicate sending frame with LoRaWAN
-  Utils.blinkRedLED(200, 3);
+  Utils.blinkRedLED(1000, 3);
   
   // Convert frame to a base64 string(?)
   char sendableString[frame.length*2 + 1];
@@ -194,17 +206,76 @@ void sendFrameWithLoRaWAN()
   // 1. LoRaWAN switch module on
   error = LoRaWAN.ON(socket);
 
+  // Check status
+  if( error == 0 )
+  {
+    USB.println(F("1. LoRaWAN switch module ON OK"));
+  }
+  else 
+  {
+    USB.print(F("1. LoRaWAN switch module ON error = ")); 
+    USB.println(error, DEC);
+  }
+
   // 2. LoRaWAN join network
   error = LoRaWAN.joinABP();
 
   // Check status
   if( error == 0 ) 
   {
+    USB.println(F("2. LoRaWAN join network OK"));   
+
     // 3. LoRaWAN send unconfirmed packet
     error = LoRaWAN.sendUnconfirmed( PORT, sendableString );
+
+    // Error messages:
+    /*
+     * '6' : Module hasn't joined a network
+     * '5' : Sending error
+     * '4' : Error with data length	  
+     * '2' : Module didn't response
+     * '1' : Module communication error   
+     */
+    // Check status
+    if( error == 0 ) 
+    {
+      // Get Device EUI
+      LoRaWAN.getDeviceAddr();
+      USB.print(F("3. LoRaWAN send unconfirmed packet OK from device address: "));
+      USB.println(LoRaWAN._devAddr);
+
+      if (LoRaWAN._dataReceived == true)
+      { 
+        USB.print(F("   There's data on port number "));
+        USB.print(LoRaWAN._port,DEC);
+        USB.print(F(".\r\n   Data: "));
+        USB.println(LoRaWAN._data);
+      }
+    }
+    else 
+    {
+      USB.print(F("3. LoRaWAN send unconfirmed packet error = ")); 
+      USB.println(error, DEC);
+    }
+  }
+  else 
+  {
+    USB.print(F("2. LoRaWAN join network error = ")); 
+    USB.println(error, DEC);
   }
 
   // 4. LoRaWAN switch module off
   error = LoRaWAN.OFF(socket);
+
+  // Check status
+  if( error == 0 ) 
+  {
+    USB.println(F("4. LoRaWAN switch module OFF OK"));     
+  }
+  else 
+  {
+    USB.print(F("4. LoRaWAN switch module OFF error = ")); 
+    USB.println(error, DEC);
+  }
 }
 
