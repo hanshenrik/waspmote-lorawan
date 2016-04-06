@@ -93,7 +93,7 @@ void loop()
   makeFrame();
   sendFrameWithLoRaWAN();
 
-  PWR.deepSleep("00:00:04:00", RTC_OFFSET, RTC_ALM1_MODE1, ALL_OFF);
+  PWR.deepSleep("00:00:09:00", RTC_OFFSET, RTC_ALM1_MODE1, ALL_OFF);
 }
 
 
