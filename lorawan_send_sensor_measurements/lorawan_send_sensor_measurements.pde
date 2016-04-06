@@ -60,7 +60,7 @@ float coCalibrationOutput[3] = {114.3312 , 40.2036 , 11.7751};
 /*** Other variables ***/
 /////////////////////////
 uint8_t error;
-char nodeFrameID[] = "WM02032222";
+char nodeFrameID[] = "222";
 uint8_t batteryLevel;
 float internalTemperature;
 
@@ -187,7 +187,7 @@ void sendFrameWithLoRaWAN()
   // Blink red LED to indicate sending frame with LoRaWAN
   Utils.blinkRedLED(200, 3);
   
-  // Convert frame to a base64 string(?)
+  // Convert frame to a hexadecimal string
   char sendableString[frame.length*2 + 1];
   Utils.hex2str(frame.buffer, sendableString, frame.length);
 
@@ -202,6 +202,14 @@ void sendFrameWithLoRaWAN()
   {
     // 3. LoRaWAN send unconfirmed packet
     error = LoRaWAN.sendUnconfirmed( PORT, sendableString );
+
+    if( error == 0 )
+    {
+      if (LoRaWAN._dataReceived == true)
+      {
+        // Do something with received data
+      }
+    }
   }
 
   // 4. LoRaWAN switch module off

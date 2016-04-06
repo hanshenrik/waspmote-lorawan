@@ -60,7 +60,7 @@ float coCalibrationOutput[3] = {114.3312 , 40.2036 , 11.7751};
 /*** Other variables ***/
 /////////////////////////
 uint8_t error;
-char nodeFrameID[] = "WM02032222";
+char nodeFrameID[] = "222";
 uint8_t batteryLevel;
 float internalTemperature;
 
@@ -109,7 +109,7 @@ void loop()
 void doGasSensorBoardMeasurements()
 {
   // Blink green LED to indicate doing measurements
-  Utils.blinkGreenLED(1000, 3);
+  Utils.blinkGreenLED(200, 3);
   
   // Turn on Gas Sensor board, wait for stabilization and sensor response time
   SensorGasv20.ON();
@@ -202,9 +202,9 @@ void makeFrame()
 void sendFrameWithLoRaWAN()
 {
   // Blink red LED to indicate sending frame with LoRaWAN
-  Utils.blinkRedLED(1000, 3);
+  Utils.blinkRedLED(200, 3);
   
-  // Convert frame to a base64 string(?)
+  // Convert frame to a hexadecimal string
   char sendableString[frame.length*2 + 1];
   Utils.hex2str(frame.buffer, sendableString, frame.length);
 
@@ -367,7 +367,7 @@ void printLoRaWANInfo()
     USB.print(F("  Duty cycle: "));
     USB.println(LoRaWAN._dCycle[i]);
     USB.print(F("  Duty cycle in %: "));
-    USB.println(100 / (LoRaWAN._dCycle[i] + 1));
+    USB.println(100 / (float)(LoRaWAN._dCycle[i] + 1));
     USB.print(F("  DR min: "));
     USB.println(LoRaWAN._drrMin[i], DEC);
     USB.print(F("  DR max: "));
