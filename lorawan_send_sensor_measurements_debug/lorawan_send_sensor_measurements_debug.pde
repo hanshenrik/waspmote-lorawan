@@ -102,7 +102,7 @@ void loop()
   sendFrameWithLoRaWAN();
 
   USB.println();
-  PWR.deepSleep("00:00:04:00", RTC_OFFSET, RTC_ALM1_MODE1, ALL_OFF);
+  PWR.deepSleep("00:00:09:00", RTC_OFFSET, RTC_ALM1_MODE1, ALL_OFF);
 }
 
 
@@ -191,6 +191,11 @@ void makeFrame()
 
   // DEV Print frame
   frame.showFrame();
+
+  USB.print(F("Frame length: "));
+  USB.println(frame.length, DEC);
+  USB.print(F("Frame max size from frame.getFrameSize(): "));
+  USB.println(frame.getFrameSize(), DEC);
 }
 
 
@@ -202,6 +207,13 @@ void sendFrameWithLoRaWAN()
   // Convert frame to a base64 string(?)
   char sendableString[frame.length*2 + 1];
   Utils.hex2str(frame.buffer, sendableString, frame.length);
+
+  USB.print(F("Sendable string: "));
+  USB.println(sendableString);
+  USB.print(F("strlen(sendableString): "));
+  USB.println(strlen(sendableString));
+  USB.print(F("sizeof(sendableString): "));
+  USB.println(sizeof(sendableString));
 
   // 1. LoRaWAN switch module on
   error = LoRaWAN.ON(socket);
@@ -233,8 +245,11 @@ void sendFrameWithLoRaWAN()
      * '6' : Module hasn't joined a network
      * '5' : Sending error
      * '4' : Error with data length	  
+     * '3' : Init error
      * '2' : Module didn't response
      * '1' : Module communication error   
+
+     These are defined in Waspmote LoRaWAN networking guide p. 13
      */
     // Check status
     if( error == 0 ) 
@@ -263,7 +278,12 @@ void sendFrameWithLoRaWAN()
     USB.print(F("2. LoRaWAN join network error = ")); 
     USB.println(error, DEC);
   }
+  
 
+  // DEV Print LoRaWAN info
+  printLoRaWANInfo();
+
+  
   // 4. LoRaWAN switch module off
   error = LoRaWAN.OFF(socket);
 
@@ -276,6 +296,85 @@ void sendFrameWithLoRaWAN()
   {
     USB.print(F("4. LoRaWAN switch module OFF error = ")); 
     USB.println(error, DEC);
+  }
+}
+
+void printLoRaWANInfo()
+{
+  LoRaWAN.getADR();
+  USB.print(F("ADR: "));
+  USB.println(LoRaWAN._adr, DEC);
+
+  LoRaWAN.getBand();
+  USB.print(F("Band: "));
+  USB.println(LoRaWAN._band);
+
+  LoRaWAN.getRadioFreq();
+  USB.print(F("Radio frequency: "));
+  USB.println(LoRaWAN._radioFreq, DEC);
+
+  LoRaWAN.getDataRate();
+  USB.print(F("DataRate: "));
+  USB.println(LoRaWAN._dataRate, DEC);
+
+  LoRaWAN.getRadioSF();
+  USB.print(F("Radio spreading factor: "));
+  USB.println(LoRaWAN._radioSF);
+
+  LoRaWAN.getRadioBW();
+  USB.print(F("Radio bandwidth: "));
+  USB.println(LoRaWAN._radioBW, DEC);
+
+  LoRaWAN.getRadioCR();
+  USB.print(F("Radio coding rate: "));
+  USB.println(LoRaWAN._radioCR);
+
+  LoRaWAN.getRadioMode();
+  USB.print(F("Radio mode: "));
+  USB.println(LoRaWAN._radioMode);
+
+  LoRaWAN.getRadioFreqDeviation();
+  USB.print(F("Radio frequency deviation: "));
+  USB.println(LoRaWAN._radioFreqDev, DEC);
+
+  LoRaWAN.getPower();
+  USB.print(F("Power index: "));
+  USB.println(LoRaWAN._powerIndex, DEC);
+
+  LoRaWAN.getRadioPower();
+  USB.print(F("Radio power: "));
+  USB.println(LoRaWAN._radioPower, DEC);
+
+  LoRaWAN.getRadioWDT();
+  USB.print(F("Radio watch dog timer's time: "));
+  USB.println(LoRaWAN._radioWDT, DEC);
+
+  LoRaWAN.getRadioPreamble();
+  USB.print(F("Radio preamble length (LoRaWAN header?): "));
+  USB.println(LoRaWAN._preambleLength, DEC);
+
+  for( int i=0; i<3; i++)
+  {
+    LoRaWAN.getChannelFreq(i);
+    LoRaWAN.getChannelDutyCycle(i);
+    LoRaWAN.getChannelDRRange(i);
+    LoRaWAN.getChannelStatus(i);
+
+    USB.print(F("Channel: "));
+    USB.println(i);
+    USB.print(F("  Freq: "));
+    USB.println(LoRaWAN._freq[i]);
+    USB.print(F("  Duty cycle: "));
+    USB.println(LoRaWAN._dCycle[i]);
+    USB.print(F("  Duty cycle in %: "));
+    USB.println(100 / (LoRaWAN._dCycle[i] + 1));
+    USB.print(F("  DR min: "));
+    USB.println(LoRaWAN._drrMin[i], DEC);
+    USB.print(F("  DR max: "));
+    USB.println(LoRaWAN._drrMax[i], DEC);
+    USB.print(F("  Status: "));
+    USB.println(LoRaWAN._status[i], DEC);
+    USB.println(F("----------------------------"));
   }
 }
 
