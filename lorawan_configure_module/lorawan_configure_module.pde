@@ -248,14 +248,14 @@ void setup()
 
 
   //////////////////////////////////////////////
-  // 9. Enable Adaptive Data Rate (ADR)
+  // 9. Set Adaptive Data Rate (ADR)
   //////////////////////////////////////////////
   error = LoRaWAN.setADR("on");
 
   // Check status
   if( error == 0 ) 
   {
-    USB.print(F("9. Adaptive Data Rate enabled OK. "));    
+    USB.print(F("9. Adaptive Data Rate set OK. "));
     USB.print(F("ADR:"));
     USB.println(LoRaWAN._adr, DEC);   
   }
@@ -265,9 +265,46 @@ void setup()
     USB.println(error, DEC);
   }
 
+  //////////////////////////////////////////////
+  // 11. Set Data Rate
+  //////////////////////////////////////////////
+
+//  error = LoRaWAN.setDataRate(0);
+//
+//  // Check status
+//  if( error == 0 ) 
+//  {
+//    USB.println(F("11. Data rate set OK"));     
+//  }
+//  else 
+//  {
+//    USB.print(F("11. Data rate set error = ")); 
+//    USB.println(error, DEC);
+//  }
+
 
   //////////////////////////////////////////////
-  // 10. Save configuration
+  // 12. Get Data Rate
+  //////////////////////////////////////////////
+
+//  error = LoRaWAN.getDataRate();
+//
+//  // Check status
+//  if( error == 0 ) 
+//  {
+//    USB.print(F("12. Data rate get OK. "));    
+//    USB.print(F("Data rate index:"));
+//    USB.println(LoRaWAN._dataRate, DEC);
+//  }
+//  else 
+//  {
+//    USB.print(F("12. Data rate set error = ")); 
+//    USB.println(error, DEC);
+//  }
+
+
+  //////////////////////////////////////////////
+  // 13. Save configuration
   //////////////////////////////////////////////
   
   error = LoRaWAN.saveConfig();
@@ -275,11 +312,11 @@ void setup()
   // Check status
   if( error == 0 ) 
   {
-    USB.println(F("10. Save configuration OK"));     
+    USB.println(F("13. Save configuration OK"));
   }
   else 
   {
-    USB.print(F("10. Save configuration error = ")); 
+    USB.print(F("13. Save configuration error = "));
     USB.println(error, DEC);
   }
 
