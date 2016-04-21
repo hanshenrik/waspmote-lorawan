@@ -183,7 +183,7 @@ void makeFrame()
   
   frame.addSensor(SENSOR_BAT, batteryLevel);
   frame.addSensor(SENSOR_IN_TEMP, internalTemperature);
-  
+
   frame.addSensor(SENSOR_GP_TC, temperature);
   frame.addSensor(SENSOR_GP_HUM, humidity);
   frame.addSensor(SENSOR_GP_CO, coPPMVal);
@@ -237,9 +237,9 @@ void sendFrameWithLoRaWAN()
   {
     USB.println(F("2. LoRaWAN join network OK"));   
 
+    Utils.blinkGreenLED(1000);
     // 3. LoRaWAN send unconfirmed packet
     error = LoRaWAN.sendUnconfirmed( PORT, sendableString );
-    Utils.blinkGreenLED(1000);
 
     // Error messages:
     /*

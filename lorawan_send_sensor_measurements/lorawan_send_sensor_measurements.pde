@@ -200,9 +200,9 @@ void sendFrameWithLoRaWAN()
   // Check status
   if( error == 0 ) 
   {
+    Utils.blinkGreenLED(1000);
     // 3. LoRaWAN send unconfirmed packet
     error = LoRaWAN.sendUnconfirmed( PORT, sendableString );
-    Utils.blinkGreenLED(1000);
 
     if( error == 0 )
     {
