@@ -250,7 +250,7 @@ void setup()
   //////////////////////////////////////////////
   // 9. Set Adaptive Data Rate (ADR)
   //////////////////////////////////////////////
-  error = LoRaWAN.setADR("on");
+  error = LoRaWAN.setADR("off");
 
   // Check status
   if( error == 0 ) 
