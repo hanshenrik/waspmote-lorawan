@@ -67,12 +67,22 @@ float internalTemperature;
 
 void setup() 
 {
+  // Checks if we come from a normal reset or a hibernate reset
+  PWR.ifHibernate();
+
   // Set frame ID for all frames to be sent
   frame.setID(nodeFrameID);
 }
 
 void loop() 
 {
+  // If a hibernate has been captured, execute the associated function
+  if ( intFlag & HIB_INT )
+  {
+    intFlag &= ~(HIB_INT);
+    delay(100);
+  }
+
   // Get battery level
   batteryLevel = PWR.getBatteryLevel();
   
@@ -84,7 +94,8 @@ void loop()
       sendFrameWithLoRaWAN();
       
       // Longer sleep interval since low battery
-      PWR.deepSleep("00:00:30:00", RTC_OFFSET, RTC_ALM1_MODE1, ALL_OFF);
+//      PWR.deepSleep("00:00:30:00", RTC_OFFSET, RTC_ALM1_MODE1, ALL_OFF);
+      PWR.hibernate("00:00:30:00", RTC_OFFSET, RTC_ALM1_MODE2);
   }
   
   internalTemperature = RTC.getTemperature();
@@ -93,7 +104,8 @@ void loop()
   makeFrame();
   sendFrameWithLoRaWAN();
 
-  PWR.deepSleep("00:00:09:00", RTC_OFFSET, RTC_ALM1_MODE1, ALL_OFF);
+//  PWR.deepSleep("00:00:09:00", RTC_OFFSET, RTC_ALM1_MODE1, ALL_OFF);
+  PWR.hibernate("00:00:09:00", RTC_OFFSET, RTC_ALM1_MODE2);
 }
 
 

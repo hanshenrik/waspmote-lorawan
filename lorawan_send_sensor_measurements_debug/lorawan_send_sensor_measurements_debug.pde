@@ -67,6 +67,9 @@ float internalTemperature;
 
 void setup() 
 {
+  // Checks if we come from a normal reset or a hibernate reset
+  PWR.ifHibernate();
+
   // Set frame ID for all frames to be sent
   frame.setID(nodeFrameID);
   
@@ -76,6 +79,17 @@ void setup()
 
 void loop() 
 {
+  // If a hibernate has been captured, execute the associated function
+  if ( intFlag & HIB_INT )
+  {
+    USB.println(F("-------------------------------"));
+    USB.println(F("Hibernate Interruption captured"));
+    USB.println(F("-------------------------------"));
+    intFlag &= ~(HIB_INT);
+//  TODO: Figure out if this delay is necessary. Is 5000ms in original example code, seems to work with only 100ms
+    delay(100);
+  }
+
   // Get battery level
   batteryLevel = PWR.getBatteryLevel();
   
@@ -91,8 +105,10 @@ void loop()
     makeFrame();
     sendFrameWithLoRaWAN();
     
-    // Longer sleep interval since low battery
-    PWR.deepSleep("00:00:30:00", RTC_OFFSET, RTC_ALM1_MODE1, ALL_OFF);
+    // Longer hibernate interval since low battery
+//    PWR.deepSleep("00:00:30:00", RTC_OFFSET, RTC_ALM1_MODE1, ALL_OFF);
+    USB.println(F("Enter hibernate mode"));
+    PWR.hibernate("00:00:30:00", RTC_OFFSET, RTC_ALM1_MODE2);
   }
   
   internalTemperature = RTC.getTemperature();
@@ -102,7 +118,9 @@ void loop()
   sendFrameWithLoRaWAN();
 
   USB.println();
-  PWR.deepSleep("00:00:09:00", RTC_OFFSET, RTC_ALM1_MODE1, ALL_OFF);
+//  PWR.deepSleep("00:00:09:00", RTC_OFFSET, RTC_ALM1_MODE1, ALL_OFF);
+  USB.println(F("Enter hibernate mode"));
+  PWR.hibernate("00:00:00:10", RTC_OFFSET, RTC_ALM1_MODE2);
 }
 
 
