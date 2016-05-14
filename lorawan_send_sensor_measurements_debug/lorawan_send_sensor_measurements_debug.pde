@@ -98,7 +98,8 @@ void loop()
   internalTemperature = RTC.getTemperature();
   RTC.OFF();
 
-  if (batteryLevel < 30) {
+  if (batteryLevel < 30)
+  {
     USB.println(F("Battery is below 30%"));
 
 //    TODO:

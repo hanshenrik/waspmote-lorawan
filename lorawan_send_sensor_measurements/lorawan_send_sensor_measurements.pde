@@ -91,14 +91,15 @@ void loop()
   internalTemperature = RTC.getTemperature();
   RTC.OFF();
 
-  if (batteryLevel < 30) {
-      doGasSensorBoardMeasurements();
-      makeFrame();
-      sendFrameWithLoRaWAN();
-      
-      // Longer sleep interval since low battery
+  if (batteryLevel < 30)
+  {
+    doGasSensorBoardMeasurements();
+    makeFrame();
+    sendFrameWithLoRaWAN();
+
+    // Longer sleep interval since low battery
 //      PWR.deepSleep("00:00:30:00", RTC_OFFSET, RTC_ALM1_MODE1, ALL_OFF);
-      PWR.hibernate("00:00:30:00", RTC_OFFSET, RTC_ALM1_MODE2);
+    PWR.hibernate("00:00:30:00", RTC_OFFSET, RTC_ALM1_MODE2);
   }
   
   doGasSensorBoardMeasurements();
@@ -112,9 +113,6 @@ void loop()
 
 void doGasSensorBoardMeasurements()
 {
-  // Blink green LED to indicate doing measurements
-//  Utils.blinkGreenLED(200, 3);
-  
   // Turn on Gas Sensor board, wait for stabilization and sensor response time
   SensorGasv20.ON();
   delay(15000);
@@ -197,9 +195,6 @@ void makeFrame()
 
 void sendFrameWithLoRaWAN()
 {
-  // Blink red LED to indicate sending frame with LoRaWAN
-//  Utils.blinkRedLED(200, 3);
-  
   // Convert frame to a hexadecimal string
   char sendableString[frame.length*2 + 1];
   Utils.hex2str(frame.buffer, sendableString, frame.length);
@@ -213,8 +208,6 @@ void sendFrameWithLoRaWAN()
   // Check status
   if( error == 0 ) 
   {
-    // Blink green LED long to indicate LoRaWAN send was successfull
-//    Utils.blinkGreenLED(1000);
     // 3. LoRaWAN send unconfirmed packet
     error = LoRaWAN.sendUnconfirmed( PORT, sendableString );
 
