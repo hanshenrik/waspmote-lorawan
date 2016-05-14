@@ -93,13 +93,16 @@ void loop()
   // Get battery level
   batteryLevel = PWR.getBatteryLevel();
   
+  // Get internal board temperature
+  RTC.ON();
+  internalTemperature = RTC.getTemperature();
+  RTC.OFF();
+
   if (batteryLevel < 30) {
     USB.println(F("Battery is below 30%"));
 
 //    TODO:
 //    sendLowBatteryFrame();
-
-    internalTemperature = RTC.getTemperature();
     
     doGasSensorBoardMeasurements();
     makeFrame();
@@ -108,10 +111,10 @@ void loop()
     // Longer hibernate interval since low battery
 //    PWR.deepSleep("00:00:30:00", RTC_OFFSET, RTC_ALM1_MODE1, ALL_OFF);
     USB.println(F("Enter hibernate mode"));
+    // RTC_ALM2_MODE2: Date,hours and minutes match
+    // (https://www.libelium.com/api/waspmote/dd/d44/WaspRTC_8h.html#a279631caf3c6eb5b852d5b7db502bf15)
     PWR.hibernate("00:00:30:00", RTC_OFFSET, RTC_ALM1_MODE2);
   }
-  
-  internalTemperature = RTC.getTemperature();
   
   doGasSensorBoardMeasurements();
   makeFrame();
@@ -120,7 +123,7 @@ void loop()
   USB.println();
 //  PWR.deepSleep("00:00:09:00", RTC_OFFSET, RTC_ALM1_MODE1, ALL_OFF);
   USB.println(F("Enter hibernate mode"));
-  PWR.hibernate("00:00:00:10", RTC_OFFSET, RTC_ALM1_MODE2);
+  PWR.hibernate("00:00:09:00", RTC_OFFSET, RTC_ALM1_MODE2);
 }
 
 

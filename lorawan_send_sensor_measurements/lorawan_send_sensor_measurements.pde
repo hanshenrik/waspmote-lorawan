@@ -85,10 +85,13 @@ void loop()
 
   // Get battery level
   batteryLevel = PWR.getBatteryLevel();
-  
+
+  // Get internal board temperature
+  RTC.ON();
+  internalTemperature = RTC.getTemperature();
+  RTC.OFF();
+
   if (batteryLevel < 30) {
-      internalTemperature = RTC.getTemperature();
-      
       doGasSensorBoardMeasurements();
       makeFrame();
       sendFrameWithLoRaWAN();
@@ -97,8 +100,6 @@ void loop()
 //      PWR.deepSleep("00:00:30:00", RTC_OFFSET, RTC_ALM1_MODE1, ALL_OFF);
       PWR.hibernate("00:00:30:00", RTC_OFFSET, RTC_ALM1_MODE2);
   }
-  
-  internalTemperature = RTC.getTemperature();
   
   doGasSensorBoardMeasurements();
   makeFrame();
